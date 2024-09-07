@@ -5,6 +5,8 @@ import org.implementacion.models.Producto;
 import org.implementacion.rep.CategoriaRepositorio;
 import org.implementacion.rep.ProductoRepositorio;
 import org.implementacion.rep.Repositorio;
+import org.implementacion.service.Catalogo;
+import org.implementacion.service.Service;
 import org.implementacion.util.ConexionBaseDatos;
 
 import java.sql.Connection;
@@ -13,43 +15,21 @@ import java.util.Date;
 
 public class Main {
     public static void main(String[] args) throws SQLException {
-        try (Connection conn = ConexionBaseDatos.getConnection()) {
 
-            if (conn.getAutoCommit())
-                conn.setAutoCommit(false);
-            try {
-                Repositorio<Categoria> repositorioCategoria = new CategoriaRepositorio(conn);
-                System.out.println("========== insertar categoria ==========");
-                Categoria categoria = new Categoria();
-                categoria.setNombre("Electrohogar");
-                Categoria nuevacategoria = repositorioCategoria.guardar(categoria);
-                System.out.println("Categoria guardada con exito " + nuevacategoria.getId());
+        Service service = new Catalogo();
+        System.out.println("========== listar ==========");
+        service.getAll().forEach(System.out::println);
+        Categoria categoria = new Categoria();
+        categoria.setNombre("Iluminacion");
 
-                Repositorio<Producto> repositorio = new ProductoRepositorio(conn);
-                System.out.println("========== listar ==========");
-                repositorio.getAll().forEach(System.out::println);
+        Producto producto = new Producto();
+        producto.setNombre("Lampara led escritorio");
+        producto.setPrecio(999);
+        producto.setFechaRegistro(new Date());
+        producto.setSku("446a5620");
+        service.guardarPCC(producto,categoria);
+        System.out.println("Producto guardado con exito" + producto.getId());
+        service.getAll().forEach(System.out::println);
 
-                System.out.println("========== obtener id ==========");
-                System.out.println(repositorio.porId(1L));
-
-                System.out.println("========== insertar nuevo producto ==========");
-                Producto producto = new Producto();
-                producto.setNombre("Refrigerador LG");
-                producto.setPrecio(14000);
-                producto.setFechaRegistro(new Date());
-                producto.setSku("456a5620");
-
-
-                producto.setCategoria(nuevacategoria);
-                repositorio.guardar(producto);
-                System.out.println("Producto guardado con exito" + producto.getId());
-                repositorio.getAll().forEach(System.out::println);
-
-                conn.commit();
-            }catch (SQLException e) {
-                conn.rollback();
-                e.printStackTrace();
-            }
-        }
     }
 }
