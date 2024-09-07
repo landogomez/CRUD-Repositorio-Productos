@@ -5,10 +5,11 @@ import org.implementacion.models.Producto;
 import org.implementacion.repositorio.ProductoRepositorio;
 import org.implementacion.repositorio.Repositorio;
 
+import java.sql.SQLException;
 import java.util.Date;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
         Repositorio<Producto> repositorio = new ProductoRepositorio();
         System.out.println("========== listar ==========");
         repositorio.getAll().forEach(System.out::println);
