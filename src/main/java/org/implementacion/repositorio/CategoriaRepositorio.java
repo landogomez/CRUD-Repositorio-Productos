@@ -44,7 +44,7 @@ public class CategoriaRepositorio implements Repositorio<Categoria> {
         if (categoria.getId() != null && categoria.getId() > 0)
             sql = "UPDATE categorias SET id = ? WHERE id = ?";
         else
-            sql = "INSERT INTO categorias (id) VALUES (?)";
+            sql = "INSERT INTO categorias (nombre) VALUES (?)";
         try(PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, categoria.getNombre());
             if (categoria.getId() != null && categoria.getId() > 0)
