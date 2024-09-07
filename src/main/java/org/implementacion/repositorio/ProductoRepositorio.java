@@ -2,22 +2,23 @@ package org.implementacion.repositorio;
 
 import org.implementacion.models.Categoria;
 import org.implementacion.models.Producto;
-import org.implementacion.util.ConexionBaseDatos;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProductoRepositorio implements Repositorio<Producto> {
-    private Connection getConnection() throws SQLException {
-        return ConexionBaseDatos.getConnection();
+    private Connection conn;
+
+    public ProductoRepositorio(Connection conn) {
+        this.conn = conn;
     }
+
     @Override
     public List<Producto> getAll() throws SQLException {
         List<Producto> productos = new ArrayList<>();
 
-        try (Connection con = getConnection();
-             Statement stmt = con.createStatement();
+        try (Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery("select p.*, c.nombre as categoria from productos as p " +
                      "inner join categorias as c on (p.id_categoria = c.id)")){
             while (rs.next()) {
@@ -32,8 +33,7 @@ public class ProductoRepositorio implements Repositorio<Producto> {
     public Producto porId(Long id) throws SQLException {
         Producto producto = null;
 
-        try (Connection con = getConnection();
-             PreparedStatement stmt = con.prepareStatement("select p.*, c.nombre as categoria from productos as p "
+        try (PreparedStatement stmt = conn.prepareStatement("select p.*, c.nombre as categoria from productos as p "
                      +"inner join categorias as c on (p.id_categoria = c.id) where p.id = ?")) {
             stmt.setLong(1,id);
 
@@ -46,15 +46,14 @@ public class ProductoRepositorio implements Repositorio<Producto> {
     }
 
     @Override
-    public void guardar(Producto producto) throws SQLException {
+    public Producto guardar(Producto producto) throws SQLException {
         String sql;
         if (producto.getId() != null && producto.getId() > 0)
             sql = "UPDATE productos SET nombre = ?, precio=?, id_categoria=?, sku=? where id=?";
         else
             sql = "INSERT INTO productos(nombre, precio, id_categoria, sku, fecha_registro) values(?,?,?,?,?)";
 
-        try (Connection con = getConnection();
-             PreparedStatement stmt = con.prepareStatement(sql)){
+        try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, producto.getNombre());
             stmt.setLong(2, producto.getPrecio());
@@ -68,13 +67,19 @@ public class ProductoRepositorio implements Repositorio<Producto> {
 
             stmt.executeUpdate();
 
+            if (producto.getId() == null){
+                try (ResultSet rs = stmt.getGeneratedKeys()) {
+                    if (rs.next())
+                        producto.setId(rs.getLong(1));
+                }
+            }
+            return producto;
         }
     }
 
     @Override
     public void eliminar(Long id) throws SQLException {
-        try (Connection con = getConnection();
-             PreparedStatement stmt = con.prepareStatement("delete from productos where id=?")){
+        try (PreparedStatement stmt = conn.prepareStatement("delete from productos where id=?")){
             stmt.setLong(1,id);
             stmt.executeUpdate();
         }
