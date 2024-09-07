@@ -14,6 +14,17 @@ public class ProductoRepositorio implements Repositorio<Producto> {
         this.conn = conn;
     }
 
+    public ProductoRepositorio() {
+    }
+
+    public Connection getConn() {
+        return conn;
+    }
+
+    public void setConn(Connection conn) {
+        this.conn = conn;
+    }
+
     @Override
     public List<Producto> getAll() throws SQLException {
         List<Producto> productos = new ArrayList<>();
