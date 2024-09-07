@@ -80,7 +80,7 @@ public class Producto {
                 fechaRegistro +
                 " | " +
                 categoria.getNombre()+
-                " | "+
+                " | " +
                 sku;
     }
 }
