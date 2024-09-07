@@ -1,4 +1,4 @@
-package org.implementacion.repositorio;
+package org.implementacion.rep;
 
 import org.implementacion.models.Categoria;
 

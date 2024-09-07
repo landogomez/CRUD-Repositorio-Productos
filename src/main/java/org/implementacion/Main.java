@@ -2,9 +2,9 @@ package org.implementacion;
 
 import org.implementacion.models.Categoria;
 import org.implementacion.models.Producto;
-import org.implementacion.repositorio.CategoriaRepositorio;
-import org.implementacion.repositorio.ProductoRepositorio;
-import org.implementacion.repositorio.Repositorio;
+import org.implementacion.rep.CategoriaRepositorio;
+import org.implementacion.rep.ProductoRepositorio;
+import org.implementacion.rep.Repositorio;
 import org.implementacion.util.ConexionBaseDatos;
 
 import java.sql.Connection;
